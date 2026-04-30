@@ -27,6 +27,7 @@ typedef struct SpTRSV_block
     int m_lv;
     int offset;
     int *d_graphInDegree;
+    int *d_graphInDegreeShadow;
     VALUE_TYPE *d_left_sum;
     int *d_while_profiler;
     int *d_id_extractor;

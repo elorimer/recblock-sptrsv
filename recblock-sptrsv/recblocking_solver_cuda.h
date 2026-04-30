@@ -337,6 +337,7 @@ void recblocking_solver_cuda(int *d_cscColPtrTR,
                         cudaMemcpy((trsv_blk[trsv_count]).d_levelItem, d_levelItem_local, blk_m[blk_count] * sizeof(int), cudaMemcpyDeviceToDevice);
 
                         cudaMalloc((void **)&(trsv_blk[trsv_count]).d_graphInDegree, blk_m[blk_count] * sizeof(int));
+                        cudaMalloc((void **)&(trsv_blk[trsv_count]).d_graphInDegreeShadow, blk_m[blk_count] * sizeof(int));
                         cudaMemset((trsv_blk[trsv_count]).d_graphInDegree, 0, blk_m[blk_count] * sizeof(int));
 
                         cudaMalloc((void **)&(trsv_blk[trsv_count]).d_id_extractor, sizeof(int));
@@ -877,6 +878,7 @@ void recblocking_solver_cuda(int *d_cscColPtrTR,
                         cudaMemcpy((trsv_blk[trsv_count]).d_levelItem, d_levelItem_local, blk_m[blk_count] * sizeof(int), cudaMemcpyDeviceToDevice);
 
                         cudaMalloc((void **)&(trsv_blk[trsv_count]).d_graphInDegree, blk_m[blk_count] * sizeof(int));
+                        cudaMalloc((void **)&(trsv_blk[trsv_count]).d_graphInDegreeShadow, blk_m[blk_count] * sizeof(int));
                         cudaMemset((trsv_blk[trsv_count]).d_graphInDegree, 0, blk_m[blk_count] * sizeof(int));
 
                         cudaMalloc((void **)&(trsv_blk[trsv_count]).d_id_extractor, sizeof(int));

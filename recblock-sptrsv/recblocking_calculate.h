@@ -95,10 +95,25 @@ void L_calculate(SpMV_block *mv_blk,
                 }
                 else if (trsv_blk[tri_index].method == 3)
                 {
+                    cudaMemcpy(trsv_blk[tri_index].d_graphInDegreeShadow, trsv_blk[tri_index].d_graphInDegree, sizeof(int) * trsv_blk[tri_index].m, cudaMemcpyDeviceToDevice);
+                    cudaMemset(trsv_blk[tri_index].d_id_extractor, 0, sizeof(int));
+                    cudaMemset(trsv_blk[tri_index].d_left_sum, 0, sizeof(VALUE_TYPE) * trsv_blk[tri_index].m);
+
+                    cudaError_t err = cudaGetLastError();
+                    if (err != cudaSuccess)
+                    {
+                        printf("FAIL: cudaError memcpy: %s\n", cudaGetErrorString(err));
+                    }
+
                     sptrsv_syncfree_warpvec_csc_cuda_executor<<<trsv_blk[tri_index].num_blocks, trsv_blk[tri_index].num_threads>>>(&d_recblock_Ptr[ptr_offset[i] - 1], &d_recblock_Index[index_offset[i]], &d_recblock_Val[index_offset[i]],
-                                                                                                                                   trsv_blk[tri_index].d_graphInDegree, trsv_blk[tri_index].d_left_sum,
+                                                                                                                                   trsv_blk[tri_index].d_graphInDegreeShadow, trsv_blk[tri_index].d_left_sum,
                                                                                                                                    trsv_blk[tri_index].m, trsv_blk[tri_index].substitution, &b_t[b_offset], &x_t[x_offset], trsv_blk[tri_index].d_while_profiler,
                                                                                                                                    trsv_blk[tri_index].d_id_extractor, trsv_blk[tri_index].d_levelItem);
+
+                    if (cudaGetLastError() != cudaSuccess)
+                    {
+                        printf("FAIL: cudaError\n");
+                    }
                 }
                 tri_index++;
                 b_offset += blk_m[i];
@@ -347,6 +362,7 @@ void device_memfree(SpMV_block *mv_blk,
         else if (trsv_blk[i].method == 3)
         {
             cudaFree(trsv_blk[i].d_graphInDegree);
+            cudaFree(trsv_blk[i].d_graphInDegreeShadow);
             cudaFree(trsv_blk[i].d_left_sum);
             cudaFree(trsv_blk[i].d_id_extractor);
             cudaFree(trsv_blk[i].d_levelItem);
